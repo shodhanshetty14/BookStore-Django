@@ -7,6 +7,10 @@ from django.urls import reverse_lazy
 from django.db.models import Q # for search method
 from django.http import JsonResponse
 import json
+from django.db.models.functions import Lower
+
+
+
 
 
 
@@ -20,15 +24,18 @@ class BooksDetailView(DetailView):
     template_name = 'detail.html'
 
 
-class SearchResultsListView(ListView):
-	model = Book
-	template_name = 'search_results.html'
 
-	def get_queryset(self): # new
-		query = self.request.GET.get('q')
-		return Book.objects.filter(
-		Q(title__icontains=query) | Q(author__icontains=query)
-		)
+
+
+class SearchResultsListView(ListView):
+    model = Book
+    template_name = 'search_results.html'
+ 
+    def get_queryset(self):
+        model = Book
+        query = self.request.GET.get('q')
+        return model.objects.filter(Q(title__icontains=query)).order_by('title')
+
 
 class BookCheckoutView(LoginRequiredMixin, DetailView):
     model = Book
