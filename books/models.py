@@ -29,7 +29,7 @@ class Book(models.Model):
         return f"{self.title} by {self.author.name} ({self.publisher.name})"
 
 class Order(models.Model):
-    product = models.ForeignKey(Book, null=True, blank=True, on_delete=models.SET_NULL)
+    product = models.ForeignKey(Book, null=True, blank=True, on_delete=models.DO_NOTHING)
     created = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
