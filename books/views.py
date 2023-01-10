@@ -2,12 +2,11 @@ from django.shortcuts import render
 from django.views.generic import ListView, DetailView
 from django.views.generic.edit import CreateView
 from django.contrib.auth.mixins import LoginRequiredMixin 
-from .models import Book, Order
+from .models import Book, Order,Author,Publisher
 from django.urls import reverse_lazy
 from django.db.models import Q # for search method
 from django.http import JsonResponse
 import json
-from django.db.models.functions import Lower
 
 
 
@@ -30,11 +29,15 @@ class BooksDetailView(DetailView):
 class SearchResultsListView(ListView):
     model = Book
     template_name = 'search_results.html'
- 
+    
     def get_queryset(self):
-        model = Book
         query = self.request.GET.get('q')
-        return model.objects.filter(Q(title__icontains=query)).order_by('title')
+        return Book.objects.filter(
+            Q(title__icontains=query) | 
+            Q(author__name__icontains=query) |
+            Q(publisher__name__icontains=query)
+        ).order_by('title')
+
 
 
 class BookCheckoutView(LoginRequiredMixin, DetailView):
